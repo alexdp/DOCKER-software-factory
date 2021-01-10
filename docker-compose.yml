@@ -1,0 +1,83 @@
+version: '3'
+
+
+volumes:
+  nexus-data-volume:
+    driver: local
+    driver_opts: 
+      #type: nfs4
+      #o: "addr=172.24.0.107,rw"
+      #device: ":/mnt/nexus-data"
+      type: none
+      o: bind
+      device: ./nexus-data
+  jenkins-data-volume:
+    driver: local
+    driver_opts: 
+      #type: nfs4
+      #o: "addr=172.24.0.107,rw"
+      #device: ":/mnt/jenklns-data"
+      type: none
+      o: bind
+      device: ./jenkins-data
+  gitlab-config-volume:
+    driver: local
+    driver_opts: 
+      #type: nfs4
+      #o: "addr=172.24.0.107,rw"
+      #device: ":/mnt/gitlab-config"
+      type: none
+      o: bind
+      device: ./gitlab-config
+  gitlab-data-volume:
+    driver: local
+    driver_opts: 
+      #type: nfs4
+      #o: "addr=172.24.0.107,rw"
+      #device: ":/mnt/gitlab-data"
+      type: none
+      o: bind
+      device: ./gitlab-data
+  
+services:
+  gitlab:
+    image: "gitlab/gitlab-ce:13.7.3-ce.0"
+    stdin_open: true
+    tty: true        
+    restart: always
+    networks:
+      - virtualnetwork
+    ports:
+      - "8080:80"
+    volumes:
+      - gitlab-config-volume:/etc/gitlab
+      - gitlab-data-volume:/var/opt/gitlab
+  jenkins:
+    image: "jenkins:2.60.3-alpine"
+    stdin_open: true
+    tty: true        
+    restart: always
+    ports:
+      - "8081:8080"
+    networks:
+      - virtualnetwork
+    volumes:
+      - jenkins-data-volume:/var/jenkins_home
+  nexus:
+    image: "sonatype/nexus3:3.29.2"
+    stdin_open: true
+    tty: true        
+    restart: always
+    ports:
+      - "8082:8081"
+    networks:
+      - virtualnetwork
+    volumes:
+      - nexus-data-volume:/nexus-data
+
+networks:
+  virtualnetwork:
+    driver: overlay
+    ipam:
+      config:
+        - subnet: 192.168.168.0/24
