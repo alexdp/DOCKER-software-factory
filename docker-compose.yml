@@ -5,36 +5,24 @@ volumes:
   nexus-data-volume:
     driver: local
     driver_opts: 
-      #type: nfs4
-      #o: "addr=172.24.0.107,rw"
-      #device: ":/mnt/nexus-data"
       type: none
       o: bind
       device: ./nexus-data
   jenkins-data-volume:
     driver: local
     driver_opts: 
-      #type: nfs4
-      #o: "addr=172.24.0.107,rw"
-      #device: ":/mnt/jenklns-data"
       type: none
       o: bind
       device: ./jenkins-data
   gitlab-config-volume:
     driver: local
     driver_opts: 
-      #type: nfs4
-      #o: "addr=172.24.0.107,rw"
-      #device: ":/mnt/gitlab-config"
       type: none
       o: bind
       device: ./gitlab-config
   gitlab-data-volume:
     driver: local
     driver_opts: 
-      #type: nfs4
-      #o: "addr=172.24.0.107,rw"
-      #device: ":/mnt/gitlab-data"
       type: none
       o: bind
       device: ./gitlab-data
@@ -70,6 +58,7 @@ services:
     restart: always
     ports:
       - "8082:8081"
+      - "8282:8282" # Port for docker for docker repository group (dockerhub proxy + docker-snapshots + docker-releases)
     networks:
       - virtualnetwork
     volumes:
